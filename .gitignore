@@ -1,0 +1,9 @@
+# Farzin
+
+#Hrank
+HRankPlus/checkpoints/
+HRankPlus/data/
+#Aegis
+Aegis/cifar10/vgg16/data/
+Aegis/cifar10/vgg16/save/
+Aegis/cifar10/vgg16/save_finetune/
