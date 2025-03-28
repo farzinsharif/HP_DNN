@@ -109,24 +109,42 @@ if len(args.gpu)>1 and torch.cuda.is_available():
     net = torch.nn.DataParallel(net, device_ids=device_id)
 
 if args.pretrain_dir:
-    # Load checkpoint.
     print('==> Resuming from checkpoint..')
-    if args.arch=='vgg_16_bn' or args.arch=='resnet_56':
-        checkpoint = torch.load(args.pretrain_dir, map_location='cuda:'+args.gpu)
-    else:
-        checkpoint = torch.load(args.pretrain_dir)
-    if args.arch=='mobilenet_v2' or args.arch=='resnet_50':
-        net.load_state_dict(checkpoint)
-    elif args.arch=='densenet_40':
-        from collections import OrderedDict
-        new_state_dict = OrderedDict()
-        for k, v in checkpoint['state_dict'].items():
-            new_state_dict[k.replace('module.', '')] = v
-        net.load_state_dict(new_state_dict)
-    else:
-        net.load_state_dict(checkpoint['state_dict'])
+    try:
+        # Load checkpoint with architecture-specific handling
+        if args.arch == 'vgg_16_bn' or args.arch == 'resnet_56':
+            checkpoint = torch.load(args.pretrain_dir, map_location='cuda:'+args.gpu)
+        else:
+            checkpoint = torch.load(args.pretrain_dir)
+
+        # Handle different checkpoint formats
+        if isinstance(checkpoint, dict):
+            if 'state_dict' in checkpoint:  # Full checkpoint format
+                state_dict = checkpoint['state_dict']
+            elif 'model' in checkpoint:     # Alternative format
+                state_dict = checkpoint['model']
+            else:                           # Assume it's the state_dict itself
+                state_dict = checkpoint
+        else:  # Direct state_dict
+            state_dict = checkpoint
+
+        # Architecture-specific loading
+        if args.arch == 'mobilenet_v2' or args.arch == 'resnet_50':
+            net.load_state_dict(state_dict)
+        elif args.arch == 'densenet_40':
+            from collections import OrderedDict
+            new_state_dict = OrderedDict()
+            for k, v in state_dict.items():
+                new_state_dict[k.replace('module.', '')] = v
+            net.load_state_dict(new_state_dict)
+        else:
+            net.load_state_dict(state_dict)
+            
+    except Exception as e:
+        print(f'Error loading checkpoint: {str(e)}')
+        raise
 else:
-    print('please speicify a pretrain model ')
+    print('please specify a pretrain model')
     raise NotImplementedError
 
 criterion = nn.CrossEntropyLoss()

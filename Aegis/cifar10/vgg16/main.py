@@ -1522,23 +1522,32 @@ def print_log(print_string, log):
 
 
 def save_checkpoint(state, is_best, save_path, filename, log):
-    filename = os.path.join(save_path, filename)
-    torch.save(state, filename)
-    if is_best:  # copy the checkpoint to the best model if it is the best_accuracy
-        
-        bestname = os.path.join(save_path, 'model_best.pth.tar')
-        print("current model is best:", bestname)
-        shutil.copyfile(filename, bestname)
-        print_log("=> Obtain best accuracy, and update the best model", log)
+    # Save ONLY model weights (state_dict) as a single .pt file
+    model_filename = os.path.join(save_path, 'model.pt')
+    torch.save(
+        state['state_dict'], 
+        model_filename,
+        _use_new_zipfile_serialization=False  # Disable multi-file zip
+    )
+    
+    if is_best:
+        best_model_filename = os.path.join(save_path, 'model_best.pt')
+        torch.save(
+            state['state_dict'],
+            best_model_filename,
+            _use_new_zipfile_serialization=False
+        )
+        print_log("=> Saved best model as 'model_best.pt' (single file)", log)
 
 def save_checkpoint_def(state, is_best, save_path, filename, log):
-    filename = os.path.join(save_path, filename)
-    torch.save(state, filename)
-    if is_best:  # copy the checkpoint to the best model if it is the best_accuracy
-        bestname = os.path.join(save_path, 'model_best_def.pth.tar')
-        print("best def name:", bestname)
-        shutil.copyfile(filename, bestname)
-        print_log("=> Obtain best accuracy, and update the best model", log)
+    # Save only the state_dict for defense model
+    model_filename = os.path.join(save_path, 'model_def.pt')
+    torch.save(state['state_dict'], model_filename)
+    
+    if is_best:
+        best_model_filename = os.path.join(save_path, 'model_best_def.pt')
+        torch.save(state['state_dict'], best_model_filename)
+        print_log("=> Saved best defense model weights as 'model_best_def.pt'", log)
 
 
 def adjust_learning_rate(optimizer, epoch, gammas, schedule):

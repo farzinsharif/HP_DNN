@@ -19,9 +19,9 @@ DATE=`date +%Y-%m-%d`
 
 ############### Configurations ########################
 enable_tb_display=true # enable tensorboard display
-model=vgg16_quan
+model=vgg16_bn
 dataset=cifar10
-epochs=200
+epochs=2
 train_batch_size=128
 test_batch_size=128
 optimizer=SGD

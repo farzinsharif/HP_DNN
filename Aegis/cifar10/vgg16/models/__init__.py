@@ -12,7 +12,7 @@ from .bin_resnet_cifar import resnet20_bin
 ############## VGG for CIFAR #############
 
 from .vanilla_models.vanilla_vgg_cifar import vgg11_bn, vgg11
-from .quan_vgg_cifar import vgg11_bn_quan, vgg11_quan, vgg16_quan
+from .quan_vgg_cifar import vgg11_bn_quan, vgg11_quan, vgg16_quan, vgg16_bn
 from .bin_vgg_cifar import vgg11_bn_bin
 
 
