@@ -1,33 +1,59 @@
 import torch
+import json
+import os
+from pathlib import Path
 
 def count_layers(state_dict):
     conv_count = 0
     fc_count = 0
-
     for key in state_dict.keys():
         if ".weight" in key:
             if key.startswith("features") and "weight" in key:
                 conv_count += 1
             elif key.startswith("classifier") and "weight" in key:
                 fc_count += 1
-
     return conv_count, fc_count
 
-def feature_dim(state_dict):
-    """
-    Print shape and dimension of all layers
-    """
-    for key, value in state_dict.items():
-        print(f"{key}: {value.shape if hasattr(value, 'shape') else type(value)}")
+def calculate_l1_rank(weight_matrix):
+    return torch.sum(torch.abs(weight_matrix)).item()
 
-def print_fc_weights(state_dict):
-    """
-    Print actual weight matrices of FC layers in classifier
-    """
-    print("\n🔍 Fully Connected Layer Weight Matrices:\n")
+def calculate_l2_rank(weight_matrix):
+    return torch.linalg.norm(weight_matrix, ord=2).item()
+
+def calculate_frobenius_rank(weight_matrix):
+    return torch.linalg.norm(weight_matrix, ord='fro').item()
+
+def calculate_svd_rank(weight_matrix):
+    rank = torch.linalg.matrix_rank(weight_matrix).item()
+    _, s, _ = torch.svd(weight_matrix)
+    effective_rank = (s > 0.01 * s[0]).sum().item()
+    return {
+        'true_rank': rank,
+        'effective_rank': effective_rank,
+        'top_5_singular_values': s[:5].tolist()
+    }
+
+def analyze_fc_layers(state_dict):
+    results = {}
     for key, value in state_dict.items():
         if key.startswith("classifier") and key.endswith(".weight"):
-            print(f"{key} (shape: {value.shape}):\n{value}\n")
+            results[key] = {
+                'shape': list(value.shape),
+                'l1_rank': calculate_l1_rank(value),
+                'l2_rank': calculate_l2_rank(value),
+                'frobenius_rank': calculate_frobenius_rank(value),
+                'svd_rank': calculate_svd_rank(value)
+            }
+    return results
+
+def save_results_to_json(results):
+    output_dir = Path(__file__).parent / "rank_results"
+    output_dir.mkdir(exist_ok=True)
+    output_file = output_dir / "vgg16_bn_FC_ranks.json"
+    
+    with open(output_file, 'w') as f:
+        json.dump(results, f, indent=4)
+    print(f"\nResults saved to: {output_file}")
 
 def main():
     model_path = 'vgg_16_bn.pt'
@@ -38,15 +64,10 @@ def main():
         return
 
     conv_layers, fc_layers = count_layers(state_dict)
+    print(f"Found {conv_layers} convolutional layers and {fc_layers} fully connected layers")
 
-    print(f"Convolutional layers: {conv_layers}")
-    print(f"Fully connected layers: {fc_layers}")
-
-    # Print FC layer weight matrices
-    print_fc_weights(state_dict)
-
-    # Optional: to inspect all keys and shapes
-    # feature_dim(state_dict)
+    results = analyze_fc_layers(state_dict)
+    save_results_to_json(results)
 
 if __name__ == "__main__":
     main()
