@@ -6,12 +6,17 @@ from pathlib import Path
 def count_layers(state_dict):
     conv_count = 0
     fc_count = 0
+    
     for key in state_dict.keys():
-        if ".weight" in key:
-            if key.startswith("features") and "weight" in key:
+        if "weight" in key and not "num_batches_tracked" in key:
+            # Count only standard VGG convolutional layers (3x3)
+            if "layers.0.weight" in key and len(state_dict[key].shape) == 4:
                 conv_count += 1
-            elif key.startswith("classifier") and "weight" in key:
+            
+            # Count fully connected layers
+            elif "classifier" in key and len(state_dict[key].shape) == 2:
                 fc_count += 1
+                
     return conv_count, fc_count
 
 def calculate_l1_rank(weight_matrix):
