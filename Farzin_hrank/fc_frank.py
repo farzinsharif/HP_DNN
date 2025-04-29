@@ -38,6 +38,10 @@ def calculate_svd_rank(weight_matrix):
         'top_5_singular_values': s[:5].tolist()
     }
 
+def calculate_avg_l1_rank(weight_matrix):
+    total_elements = weight_matrix.shape[0] * weight_matrix.shape[1]
+    return torch.sum(torch.abs(weight_matrix)).item() / total_elements
+
 def analyze_fc_layers(state_dict):
     results = {}
     for key, value in state_dict.items():
@@ -45,9 +49,11 @@ def analyze_fc_layers(state_dict):
             results[key] = {
                 'shape': list(value.shape),
                 'l1_rank': calculate_l1_rank(value),
+                'avg_l1_rank': calculate_avg_l1_rank(value),
                 'l2_rank': calculate_l2_rank(value),
                 'frobenius_rank': calculate_frobenius_rank(value),
                 'svd_rank': calculate_svd_rank(value)
+                
             }
     return results
 
