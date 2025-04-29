@@ -40,7 +40,9 @@ def calculate_svd_rank(weight_matrix):
 
 def calculate_avg_l1_rank(weight_matrix):
     total_elements = weight_matrix.shape[0] * weight_matrix.shape[1]
+    # print(total_elements) #this line shall be commented in the real run,(it's only here to make sure that the number of elements are count correctly according to the weight matrix shape)
     return torch.sum(torch.abs(weight_matrix)).item() / total_elements
+    
 
 def analyze_fc_layers(state_dict):
     results = {}
@@ -79,6 +81,7 @@ def main():
 
     results = analyze_fc_layers(state_dict)
     save_results_to_json(results)
+    
 
 if __name__ == "__main__":
     main()
