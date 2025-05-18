@@ -7,8 +7,8 @@ echo "Current host is: $HOST"
 # Automatic check the host and configure
 case $HOST in
 "alpha")
-    PYTHON="/home/farzin/anaconda3/envs/aegis/bin/python" # python environment path
-    TENSORBOARD='/home/farzin/anaconda3/envs/aegis/bin/tensorboard' # tensorboard environment path
+    PYTHON="/home/farzin/anaconda3/envs/hp_dnn/bin/python" # python environment path
+    TENSORBOARD='/home/farzin/anaconda3/envs/hp_dnn/bin/tensorboard' # tensorboard environment path
     data_path='./data'
     ;;
 esac
@@ -21,7 +21,7 @@ DATE=`date +%Y-%m-%d`
 enable_tb_display=true # enable tensorboard display
 model=vgg16_quan
 dataset=cifar10
-epochs=200
+epochs=20
 train_batch_size=128
 test_batch_size=128
 optimizer=SGD
@@ -31,7 +31,7 @@ label_info=binarized
 save_path=./save/
 tb_path=${save_path}/tb_log  #tensorboard log path
 
-PYTHON="/home/farzin/anaconda3/envs/aegis/bin/python"
+PYTHON="/home/farzin/anaconda3/envs/hp_dnn/bin/python"
 data_path='./data'
 echo $PYTHON
 
