@@ -8,7 +8,8 @@
 ```bash
 python rank_generation.py --dataset cifar10 --data_dir ./data/cifar10 --pretrain_dir ./checkpoints/data.pkl --arch vgg_16_bn --limit 5 --gpu 0
 ```
-
+### NOTE
+use the .pt file format for this script (possibly main branch aegis code can provide it :)
 ## F_rank
 The pretrain file shall be in the same dir as the script is, the main difference between f_rank and rank_generation.py is the model arch is explained inside the f_rank
 ### How to run?
@@ -22,6 +23,8 @@ python3 fc_frank.py
 main challenge is to fit the pretrain arc with the one that f_rank / Hrankplus expects.
 make sure to use the same dataset as did on the pretrain provided for the script. the data directory and rank_results will be created by the script.
 since the frank.py is based on hrank and will only rank the layer based on svd and feature map, the seccond script, fc_frank.py is provided to rank the fc layer with diverse methods .
+### NOTE
+use the .pt file format for this script (possibly main branch aegis code can provide it :)
 ### explanation of output difference and controversy between methods results of fc_rank
 this example is based on vgg_16_bn, the model will later be provided in google drive
 
