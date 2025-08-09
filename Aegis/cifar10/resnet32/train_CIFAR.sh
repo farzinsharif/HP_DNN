@@ -7,8 +7,8 @@ echo "Current host is: $HOST"
 # Automatic check the host and configure
 case $HOST in
 "alpha")
-    PYTHON="/usr/bin/python3.6" # python environment path
-    TENSORBOARD='/home/elliot/anaconda3/envs/pytorch041/bin/tensorboard' # tensorboard environment path
+    PYTHON="/home/farzin/anaconda3/envs/hp_dnn/bin/python" # python environment path
+    TENSORBOARD='/home/farzin/anaconda3/envs/hp_dnn/bin/tensorboard' # tensorboard environment path
     data_path='./data'
     ;;
 esac
@@ -21,7 +21,7 @@ DATE=`date +%Y-%m-%d`
 enable_tb_display=false # enable tensorboard display
 model=resnet32_quan
 dataset=cifar10
-epochs=200
+epochs=10
 train_batch_size=128
 test_batch_size=128
 optimizer=SGD
@@ -31,7 +31,7 @@ label_info=binarized
 save_path=./save/
 tb_path=${save_path}/tb_log  #tensorboard log path
 
-PYTHON="/usr/bin/python3.6"
+PYTHON="/home/farzin/anaconda3/envs/hp_dnn/bin/python"
 data_path='./data'
     
 echo $PYTHON
@@ -45,7 +45,7 @@ $PYTHON main.py --dataset ${dataset} --data_path ${data_path}   \
 	--schedule 80 120  --gammas 0.1 0.1 \
     --attack_sample_size ${train_batch_size} \
     --test_batch_size ${test_batch_size} \
-    --workers 1 --ngpu 1 --gpu_id 2 \
+    --workers 1 --ngpu 1 --gpu_id 0 \
     --print_freq 100 --decay 0.0003 --momentum 0.9 \
     # --ic_only #default false
     #--bfa_mydefense

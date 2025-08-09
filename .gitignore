@@ -10,3 +10,16 @@ Aegis/cifar10/vgg16/save_finetune/
 
 #Farzin_hrank
 Farzin_hrank/data
+
+
+__pycache__/
+*.pth
+*.pth.tar
+
+
+# Ignore ResNet32 save & data folders
+Aegis/cifar10/resnet32/save/
+Aegis/cifar10/resnet32/data/
+
+
+Aegis/cifar10/resnet32/tmp.pth
